@@ -122,6 +122,43 @@
     }
 }
 
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return YES;
+}
+
+- (NSArray<UITableViewRowAction *> *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath{
+    UITableViewRowAction *deleteAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDestructive title:@"删除" handler:^(UITableViewRowAction * _Nonnull action, NSIndexPath * _Nonnull indexPath) {
+        [self shouldDeleteStarRowAt:indexPath.row];
+    }];
+    return @[deleteAction];
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath{
+    editingStyle = UITableViewCellEditingStyleDelete;
+}
+
+- (void)shouldDeleteStarRowAt: (NSInteger)index
+{
+    NSUserDefaults * userDefault = [NSUserDefaults standardUserDefaults];
+    [self.data removeObjectAtIndex:index];
+    if (self.data.count == 0) {
+        [userDefault removeObjectForKey:@"StarList"];
+        [self.tableView removeFromSuperview];
+        [self.view addSubview:self.emptyLable];
+        return;
+    }
+    NSMutableArray * tempArr = [NSMutableArray arrayWithCapacity:self.data.count];
+    for (NSStoreNewsData * news in self.data) {
+        NSData * data = [NSKeyedArchiver archivedDataWithRootObject:news];
+        [tempArr addObject:data];
+    }
+    NSArray * newCommit = [NSArray arrayWithArray:tempArr];
+    [userDefault setObject:newCommit forKey:@"StarList"];
+    [self.tableView reloadData];
+    
+}
+
 
 
 @end

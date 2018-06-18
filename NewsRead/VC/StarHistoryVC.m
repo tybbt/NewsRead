@@ -22,7 +22,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.view addSubview:self.topBar];
-    [self.view addSubview:self.tableView];
+    
     [self loadDataSource];
 }
 
@@ -54,9 +54,9 @@
 - (UILabel *)emptyLable
 {
     if (!_emptyLable) {
-        _emptyLable = [[UILabel alloc] initWithFrame:CGRectMake(ScreenWidth/2-50, ScreenHeight/2-30, 100, 60)];
+        _emptyLable = [[UILabel alloc] initWithFrame:CGRectMake(0, SafeTopBarHeight, ScreenWidth, ScreenHeight - SafeTopBarHeight)];
         [_emptyLable setText:@"当前无收藏"];
-        [_emptyLable setBackgroundColor:[UIColor clearColor]];
+        [_emptyLable setBackgroundColor:[UIColor whiteColor]];
         [_emptyLable setTextAlignment:NSTextAlignmentCenter];
         [_emptyLable setFont:[UIFont systemFontOfSize:13]];
     }
@@ -75,9 +75,10 @@
 {
     NSUserDefaults * userDefault = [NSUserDefaults standardUserDefaults];
     if (![userDefault objectForKey:@"StarList"]) {
-        [self.tableView removeFromSuperview];
         [self.view addSubview:self.emptyLable];
+        return;
     }
+    [self.view addSubview:self.tableView];
     NSArray * array = [userDefault objectForKey:@"StarList"];
     [self.data removeAllObjects];
     for (NSData * data in array) {
